@@ -1,0 +1,153 @@
+# VS code extensions
+# YAML
+# Azure CLI
+
+# https://aksworkshop.io/
+
+#Login to Azure
+az login
+
+#set default subcription
+az account set -s 6614308e-2447-429e-ada9-f989dd7096e0
+
+#Create resource group
+az group create -n GepGroup -l southeastasia
+
+#List the groups in table format
+az group list -o table
+
+#Create a VNET
+az network vnet create -g GepGroup -n AksVNET --address-prefixes 10.0.0.0/8 --subnet-name akssubnet --subnet-prefix 10.240.0.0/16
+
+#Create additional subnet
+az network vnet subnet create -g GepGroup --vnet-name AksVNET -n vnodesubnet --address-prefix 10.241.0.0/16
+
+#create service principal
+az ad sp create-for-rbac --skip-assignment
+
+# {
+#   "appId": "3deab13e-45ed-4943-b0aa-9e36d51f50ae",
+#   "displayName": "azure-cli-2019-05-20-11-02-43",
+#   "name": "http://azure-cli-2019-05-20-11-02-43",
+#   "password": "0ebe2fd9-5ec9-4294-8e30-2489894e7ab7",
+#   "tenant": "e3a291d3-8a20-4c35-8d08-38ffcafa479d"
+# }
+
+az network vnet show -g GepGroup -n AksVNET --query id -o tsv
+#/subscriptions/6614308e-2447-429e-ada9-f989dd7096e0/resourceGroups/GepGroup/providers/Microsoft.Network/virtualNetworks/AksVNET
+
+#Assign permisions to VNET
+az role assignment create --assignee "3deab13e-45ed-4943-b0aa-9e36d51f50ae" --scope "/subscriptions/6614308e-2447-429e-ada9-f989dd7096e0/resourceGroups/GepGroup/providers/Microsoft.Network/virtualNetworks/AksVNET" --role Contributor
+
+#get subnet id for cluster
+az network vnet subnet show --resource-group GepGroup --vnet-name AksVNET --name akssubnet --query id -o tsv
+#/subscriptions/6614308e-2447-429e-ada9-f989dd7096e0/resourceGroups/GepGroup/providers/Microsoft.Network/virtualNetworks/AksVNET/subnets/akssubnet
+
+#Create AKS cluster with VNET
+az aks create \
+    --resource-group GepGroup \
+    --name brijakscluster \
+    --node-count 3 \
+    --kubernetes-version 1.12.6 \
+    --network-plugin azure \
+    --service-cidr 10.0.0.0/16 \
+    --dns-service-ip 10.0.0.10 \
+    --docker-bridge-address 172.17.0.1/16 \
+    --vnet-subnet-id "/subscriptions/6614308e-2447-429e-ada9-f989dd7096e0/resourceGroups/GepGroup/providers/Microsoft.Network/virtualNetworks/AksVNET/subnets/akssubnet" \
+    --generate-ssh-keys
+    --no-wait
+
+#install kubectl in local machine
+az aks install-cli
+
+#kubectl
+
+#download the cluster credentials
+az aks get-credentials -n brijakscluster -g GepGroup --overwrite-existing
+
+#kubectl config view
+#kubectl get nodes
+#kubectl get pods
+#kubectl get svc
+#kubectl describe svc kubernetes
+
+#Create Service Account "tiller" and RBAC
+kubectl apply -f helm-rbac.yaml
+
+#below command needs helm to be installed
+#to install helm using chocolatey,run 'choco install kubernetes-helm'
+helm init --service-account tiller
+
+helm install stable/mongodb --name orders-mongo --set mongodbUsername=orders-user,mongodbPassword=orders-password,mongodbDatabase=akschallenge
+
+#deploy the capture order svc
+kubectl apply -f captureorder-deployment.yaml
+
+#verify the pods are up and running
+kubectl get pods -l app=captureorder
+
+#check how many deployment are done
+kubectl get deploy
+
+#check how many services running
+kubectl get svc
+
+#check he post response
+curl -d '{"EmailAddress": "email@domain.com", "Product": "prod-1", "Total": 100}' -H "Content-Type: application/json" -X POST http://52.187.49.130/v1/order
+
+
+# kubectl describe pod <podname>
+# kubectl describe svc <svcname>
+
+#delete the captureorder deployment
+#kubectl delete deploy captureorder
+
+#helm delete --purge orders-mongo
+
+az aks enable-addons -g GepGroup -n brijakscluster --addons http_application_routing
+
+az aks enable-addons --resource-group GepGroup --name brijakscluster --addons http_application_routing
+
+az aks show -g GepGroup -n brijakscluster --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o table
+
+#Get the permission from below link
+#https://github.com/kubernetes/dashboard/wiki/Access-control
+az aks browse -g GepGroup -n brijakscluster
+
+az aks enable-addons -g GepGroup -n brijakscluster --addons monitoring
+
+#Create container for load test
+#to get service ip, use kubectl get svc
+az container create -g GepGroup -n loadtest --image azch/loadtest --restart-policy Never -e SERVICE_IP=52.187.49.130
+
+#check logs
+az container logs -g GepGroup -n loadtest
+
+#delete container after load test
+az container delete -g GepGroup -n loadtest
+
+#apply the yaml
+kubectl apply -f captureorder-hpa.yaml
+
+#get the hpa
+kubectl get hpa
+
+
+az container create -g GepGroup -n loadtest --image azch/loadtest --restart-policy Never -e SERVICE_IP=52.187.49.130
+
+az acr create -g GepGroup --name brijacr --sku Standard --location southeastasia
+
+#Clone the application code on Azure Cloud Shell
+git clone https://github.com/Azure/azch-captureorder.git
+cd azch-captureorder
+
+#create the ACR repository
+az acr build -t "captureorder:{{.Run.ID}}" -r brijacr .
+
+
+#create the secret
+kubectl create secret docker-registry acr-auth --docker-server brijacr.azurecr.io --docker-username brijacr --docker-password 4srCVAabf/++vKQ1hMpHtWXXIelVtlpZ --docker-email brijesh.kothari@gep.com
+
+
+#update the yaml
+kubectl replace -f captureorder-deployment.yaml
