@@ -7,4 +7,216 @@ public static class RowIdGenerator
         }
     }
     
+ Table storage -
+ Microsoft.Azure.Cosmos.Table
+ Microsoft.Azure.Storage.Queue
+ WindowsAzure.Storage
+ Azure.Storage.Blobs
  
+ 
+ Azure Table handler
+ using DM.Notification.Core.Entity;
+using Microsoft.Azure.Cosmos.Table;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace DM.Notification.Core
+{
+    public class AzureTableHandler : IAzureTableHandler
+    {
+        CloudStorageAccount storageAccount;
+
+        // Create the table client.
+        CloudTableClient tableClient;
+        CloudTable table;
+
+        public AzureTableHandler(string connectionString, string tablename)
+        {
+         
+            storageAccount = CloudStorageAccount.Parse(connectionString);
+            tableClient = storageAccount.CreateCloudTableClient();
+            table = tableClient.GetTableReference(tablename);
+            table.CreateIfNotExistsAsync();
+        }
+
+        public TableResult Insert(ITableEntity msg) // where  T : EntityBase
+        {
+
+            msg.Timestamp = DateTime.UtcNow;
+            TableOperation insertOperation = TableOperation.Insert(msg);
+
+            return Execute(insertOperation);
+        }
+
+        private TableResult Execute(TableOperation op)
+        {
+            try
+            {
+                return table.ExecuteAsync(op).Result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public List<T> RetrieveEntity<T>(string Query = null) where T : TableEntity, new()
+        {
+            try
+            {
+                // Create the Table Query Object for Azure Table Storage  
+                TableQuery<T> DataTableQuery = new TableQuery<T>();
+                if (!String.IsNullOrEmpty(Query))
+                {
+                    DataTableQuery = new TableQuery<T>().Where(Query);
+                }
+                IEnumerable<T> IDataList = table.ExecuteQuery(DataTableQuery);
+                
+                List<T> DataList = new List<T>();
+                foreach (var singleData in IDataList)
+                {
+                    if(singleData != null)
+                    {
+                        DataList.Add(singleData);
+                    }
+                }
+                    
+                return DataList;
+            }
+            catch (Exception ExceptionObj)
+            {
+                throw ExceptionObj;
+            }
+        }
+        public TableResult InsertOrMergeEntity(ITableEntity msg)
+        { 
+            TableOperation insertOperation = TableOperation.InsertOrReplace(msg);
+
+            return Execute(insertOperation);
+        }
+
+        public TableResult Delete(ITableEntity msg) 
+        {
+
+            TableOperation deleteOperation = TableOperation.Delete(msg);
+
+            return Execute(deleteOperation);
+        }
+
+    }
+}
+
+Azure Queue Handler
+
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Queue;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace DM.Notification.Core
+{
+    public class AzureQueueHandler : IAzureQueueHandler
+    {
+
+        CloudQueueClient queueClient;
+        CloudQueue queue;
+        CloudStorageAccount storageAccount;
+
+        public AzureQueueHandler(string queueName, string connection)
+        {
+            
+            storageAccount = CloudStorageAccount.Parse(connection);
+            queueClient = storageAccount.CreateCloudQueueClient();
+            queue = queueClient.GetQueueReference(queueName);
+            queue.CreateIfNotExistsAsync();
+            
+        }
+
+        public void AddMessage(Object content)
+        {
+
+            CloudQueueMessage msg = CloudQueueMessageExtensions.Serialize(content);
+            queue.AddMessage(msg);
+        }
+                    
+        public T Dequeue<T>() where T:class
+        {
+            return queue.GetMessage().Deserialize<T>();
+        }
+
+        public void DeleteQueue()
+        {
+            queue.Delete();
+        }
+        public Task Delete(Object content)
+        {
+            CloudQueueMessage msg = CloudQueueMessageExtensions.Serialize(content);
+            return queue.DeleteMessageAsync(msg);
+        }
+
+
+        public Task DeleteQueueById(string messageId, string popReceipt)
+        {
+
+            return queue.DeleteMessageAsync(messageId, popReceipt);
+        }
+        public IEnumerable<CloudQueueMessage> BulkMessage(int msgcount, int blocktime)
+        {
+            return queue.GetMessages(21, TimeSpan.FromMinutes(blocktime), null, null);
+        }
+
+    }
+}
+
+Blob handler
+using Azure.Storage.Blobs;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using System.Web;
+
+namespace DM.Notification.Core.Helpers
+{
+    public class BlobAttachmentFiles
+    {
+        CloudStorageAccount _storageAccount;
+        CloudBlobClient _cloudBlobClient;
+        
+
+        public BlobAttachmentFiles(string connection)
+        {
+            _storageAccount = CloudStorageAccount.Parse(connection);
+            _cloudBlobClient = _storageAccount.CreateCloudBlobClient();
+        }
+
+        public  async Task<byte[]> DownloadFileFromBlob(string fileName)
+        {
+            byte[] fileArray = null;
+            BlobUriBuilder blobUriBuilder = new BlobUriBuilder(new Uri(fileName));
+            if (blobUriBuilder != null)
+            {
+                CloudBlobContainer container = _cloudBlobClient.GetContainerReference(blobUriBuilder.BlobContainerName);
+                var decodeFileName = HttpUtility.UrlDecode(blobUriBuilder.BlobName); 
+                CloudBlockBlob blob = container.GetBlockBlobReference(decodeFileName);
+                using (var ms = new MemoryStream())
+                {
+                    if (await blob.ExistsAsync())
+                    {
+                        await blob.DownloadToStreamAsync(ms);
+                    }
+                    fileArray = ms.ToArray();
+                }
+            }
+            else
+            {
+                string message = "Container not exist";
+            }
+            return fileArray;
+        } 
+    }
+}
+
