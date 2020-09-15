@@ -1,0 +1,10 @@
+This is for Row Key
+public static class RowIdGenerator
+    {
+        public static string New()
+        {
+            return $"{DateTime.Now.ToString("yyyy")}{DateTime.Now.Month.ToString("00")}{DateTime.Now.ToString("dd")}-{Guid.NewGuid().ToString()}";
+        }
+    }
+    
+ 
