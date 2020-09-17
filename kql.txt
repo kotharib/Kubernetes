@@ -1,0 +1,97 @@
+First download Kusto Explorer from https://aka.ms/Kusto.Explorer and Install it.
+After opening the application on left hand side right click on Connection and select Add Connection
+Open Advance connection String(Control+F9)
+
+Queries
+
+Scenario get data between two date time datetime(2019-09-09 06:00:00) And datetime(2019-09-10 06:30:00) And which has type as Error and RoleInstanceName should contains container inside it like free search and Message should start with JWT Token expired.
+
+
+
+//KQL Format
+let startDate=datetime(2019-09-09 06:00:00);
+let endDate=datetime(2019-09-10 06:30:00);
+SmartLog
+| where TimeStamp between (startDate .. endDate) and RoleInstanceName contains "container"
+| where Type =="ERROR"
+|where Message startswith "JWT token expired"
+| order by TimeStamp desc
+| take  10
+ 
+ 
+//SQL Format
+Select top 10 * FROM SmartLog
+where TimeStamp between cast( '2019-09-09 06:00:00' as DateTime) And cast( '2019-09-10 06:30:00' as DateTime) and RoleInstanceName like '%container%'
+And Type='ERROR'
+And Message like 'JWT token expired%'
+order by TimeStamp desc
+
+
+Now in above scenario we want to add one more filter on json column i.e. Properties which contains MachineName,userName,identity we can do it with following KQL query.
+
+As of now SQL syntax does not support json Parse inside Kusto.explorer
+
+KQL Syntax
+let startDate=datetime(2019-09-09 06:00:00);
+let endDate=datetime(2019-09-10 06:30:00);
+SmartLog
+| where TimeStamp between (startDate .. endDate) and RoleInstanceName contains "container"
+| where Type =="ERROR"
+| where Message startswith "JWT token expired"
+| extend Props=parse_json(Properties)
+| extend HostName=Props.["log4net:HostName"]
+| where HostName == "b114e01a4dce"
+| order by TimeStamp desc
+| project Properties,LoggerName,Type,Message,TimeStamp
+
+Get data for particular Smart Transaction Id for specific date period.
+
+queries
+//Get logs for particular transaction id in between two dates
+//KQL Query
+let startDate=datetime(2019-09-01);
+let endDate=datetime(2019-09-10);
+SmartLog
+| where TimeStamp between (startDate .. endDate)
+| where SMARTTransactionId contains 'SmartTransactionID'
+| order by TimeStamp desc
+| take 10
+ 
+//SQL Query
+Select top 10 * FROM SmartLog where TimeStamp between cast( '20190901' as Date) And cast( '20190910' as Date)  AND SMARTTransactionId = 'SmartTransactionID' order by TimeStamp
+
+
+Get records for particular buyer partner Code for Specific date period.
+
+// Get records for particular buyer partner Code for Specific date period.
+//KQL Query
+let startDate=datetime(2019-08-01);
+let endDate=datetime(2019-09-11);
+SmartLog
+| where  BuyerPartnerCode ==1
+| order by TimeStamp desc
+ 
+//SQL Query
+Select * FROM SmartLog where TimeStamp between cast( '20190801' as Date) And cast( '20190909' as Date)  AND BuyerPartnerCode =1 order by TimeStamp desc
+
+Searching in All Columns with free text seach
+
+// For particular date period we want to search in all columns for specify string like portal
+
+
+
+let startDate=datetime(2019-09-09 06:00:00);
+let endDate=datetime(2019-09-10 06:30:00);
+SmartLog
+| where TimeStamp between (startDate .. endDate) and RoleInstanceName contains "container"
+| search 'portal'
+| take 10
+
+
+#	Tip	Prefer	Over	
+1	Prefer to use a single searchoperator over several consecutive search operators	search "billg" and ("steveb" or "satyan")	search "billg" | search "steveb" or "satyan"	
+2	Prefer to filter inside the searchoperator	search "billg" and "steveb"	search * | where * has "billg" and * has "steveb"
+
+Study Links:
+https://docs.microsoft.com/en-us/azure/kusto/query/
+https://docs.microsoft.com/en-us/azure/kusto/query/searchoperator
