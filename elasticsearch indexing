@@ -1,0 +1,164 @@
+Creating a New Elastic-search Index
+
+PUT /indexname
+{
+  "settings": {
+    "index" : {
+            "number_of_shards" : 3, 
+            "number_of_replicas" : 2 
+        },
+    "analysis": {
+      "analyzer": {
+         "autocomplete_index": {
+          "type": "custom",
+          "tokenizer": "icu_tokenizer",
+          "filter": [
+            "icu_normalizer", "icu_folding", "autocomplete_ngram"
+          ]
+        },
+        "autocomplete_search": {
+          "type": "custom",
+          "tokenizer": "icu_tokenizer",
+          "filter": [
+            "icu_normalizer", "icu_folding", "stop"
+          ]
+        },
+        "autocomplete_highlight": {
+          "type": "custom",
+          "tokenizer": "autocomplete_highlight",
+          "filter": [
+            "icu_normalizer", "icu_folding"
+          ]
+        }
+      },
+      "tokenizer": {
+        "autocomplete_highlight": {
+          "type": "edge_ngram",
+          "min_gram": 2,
+          "max_gram": 20,
+          "token_chars": [
+          ]
+        }
+      },
+      "filter": {
+        "autocomplete_ngram": {
+          "type": "edgeNGram",
+          "min_gram": 2,
+          "max_gram": 20
+        }
+      }
+    }
+  }
+}
+2. Assign Mapping to an Index
+
+PUT /indexname/_mapping
+{
+	"properties": {
+		"AssociationTypeInfo": {
+			"type": "long"
+		},
+		"CompanyCode": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		},
+		"CompanyCodeId" : {
+          "type" : "long"
+        },
+		"CompanyCodeDescription": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		},
+		"DisplayName": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		},
+		"DocTypeCode": {
+			"type": "long"
+		},
+		"DocumentCode": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		},
+		"EntityCode": {
+			"type": "text",
+			"fields": {
+				"autosuggest": {
+					"type": "text",
+					"analyzer": "autocomplete_highlight",
+					"search_analyzer": "autocomplete_search"
+				},
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		},
+		"EntityDescription": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		},
+		"EntityId": {
+			"type": "long"
+		},
+		"HasMapping": {
+			"type": "boolean"
+		},
+		"IndexedOn": {
+			"type": "date"
+		},
+		"IsActive": {
+			"type": "boolean"
+		},
+		"IsBridge": {
+			"type": "boolean"
+		},
+		"Level": {
+			"type": "long"
+		},
+		"OrgEntityCode": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		},
+		"ParentOrgEntityCode": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		}
+	}
+}
+ 
