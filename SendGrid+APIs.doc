@@ -1,0 +1,279 @@
+Date: Thu, 17 Sep 2020 06:26:26 +0000 (UTC)
+Message-ID: <914515103.15.1600323986688@187c3656cef5>
+Subject: Exported From Confluence
+MIME-Version: 1.0
+Content-Type: multipart/related; 
+	boundary="----=_Part_14_400716490.1600323986687"
+
+------=_Part_14_400716490.1600323986687
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///C:/exported.html
+
+<html xmlns:o=3D'urn:schemas-microsoft-com:office:office'
+      xmlns:w=3D'urn:schemas-microsoft-com:office:word'
+      xmlns:v=3D'urn:schemas-microsoft-com:vml'
+      xmlns=3D'urn:w3-org-ns:HTML'>
+<head>
+    <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8=
+">
+    <title>SendGrid APIs</title>
+    <!--[if gte mso 9]>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:TargetScreenSize>1024x640</o:TargetScreenSize>
+            <o:PixelsPerInch>72</o:PixelsPerInch>
+            <o:AllowPNG/>
+        </o:OfficeDocumentSettings>
+        <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>90</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+                <!--
+        @page Section1 {
+            size: 8.5in 11.0in;
+            margin: 1.0in;
+            mso-header-margin: .5in;
+            mso-footer-margin: .5in;
+            mso-paper-source: 0;
+        }
+
+        table {
+            border: solid 1px;
+            border-collapse: collapse;
+        }
+
+        table td, table th {
+            border: solid 1px;
+            padding: 5px;
+        }
+
+        td {
+            page-break-inside: avoid;
+        }
+
+        tr {
+            page-break-after: avoid;
+        }
+
+        div.Section1 {
+            page: Section1;
+        }
+
+        /* Confluence print stylesheet. Common to all themes for print medi=
+a */
+/* Full of !important until we improve batching for print CSS */
+
+@media print {
+    #main {
+        padding-bottom: 1em !important; /* The default padding of 6em is to=
+o much for printouts */
+    }
+
+    body {
+        font-family: Arial, Helvetica, FreeSans, sans-serif;
+        font-size: 10pt;
+        line-height: 1.2;
+    }
+
+    body, #full-height-container, #main, #page, #content, .has-personal-sid=
+ebar #content {
+        background: #fff !important;
+        color: #000 !important;
+        border: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+    }
+
+    a, a:link, a:visited, a:focus, a:hover, a:active {
+        color: #000;
+    }
+
+    #content h1,
+    #content h2,
+    #content h3,
+    #content h4,
+    #content h5,
+    #content h6 {
+        font-family: Arial, Helvetica, FreeSans, sans-serif;
+        page-break-after: avoid;
+    }
+
+    pre {
+        font-family: Monaco, "Courier New", monospace;
+    }
+
+    #header,
+    .aui-header-inner,
+    #navigation,
+    #sidebar,
+    .sidebar,
+    #personal-info-sidebar,
+    .ia-fixed-sidebar,
+    .page-actions,
+    .navmenu,
+    .ajs-menu-bar,
+    .noprint,
+    .inline-control-link,
+    .inline-control-link a,
+    a.show-labels-editor,
+    .global-comment-actions,
+    .comment-actions,
+    .quick-comment-container,
+    #addcomment {
+        display: none !important;
+    }
+
+    /* CONF-28544 cannot print multiple pages in IE */
+    #splitter-content {
+        position: relative !important;
+    }
+
+    .comment .date::before {
+        content: none !important; /* remove middot for print view */
+    }
+
+    h1.pagetitle img {
+        height: auto;
+        width: auto;
+    }
+
+    .print-only {
+        display: block;
+    }
+
+    #footer {
+        position: relative !important; /* CONF-17506 Place the footer at en=
+d of the content */
+        margin: 0;
+        padding: 0;
+        background: none;
+        clear: both;
+    }
+
+    #poweredby {
+        border-top: none;
+        background: none;
+    }
+
+    #poweredby li.print-only {
+        display: list-item;
+        font-style: italic;
+    }
+
+    #poweredby li.noprint {
+        display: none;
+    }
+
+    /* no width controls in print */
+    .wiki-content .table-wrap,
+    .wiki-content p,
+    .panel .codeContent,
+    .panel .codeContent pre,
+    .image-wrap {
+        overflow: visible !important;
+    }
+
+    /* TODO - should this work? */
+    #children-section,
+    #comments-section .comment,
+    #comments-section .comment .comment-body,
+    #comments-section .comment .comment-content,
+    #comments-section .comment p {
+        page-break-inside: avoid;
+    }
+
+    #page-children a {
+        text-decoration: none;
+    }
+
+    /**
+     hide twixies
+
+     the specificity here is a hack because print styles
+     are getting loaded before the base styles. */
+    #comments-section.pageSection .section-header,
+    #comments-section.pageSection .section-title,
+    #children-section.pageSection .section-header,
+    #children-section.pageSection .section-title,
+    .children-show-hide {
+        padding-left: 0;
+        margin-left: 0;
+    }
+
+    .children-show-hide.icon {
+        display: none;
+    }
+
+    /* personal sidebar */
+    .has-personal-sidebar #content {
+        margin-right: 0px;
+    }
+
+    .has-personal-sidebar #content .pageSection {
+        margin-right: 0px;
+    }
+
+    .no-print, .no-print * {
+        display: none !important;
+    }
+}
+-->
+    </style>
+</head>
+<body>
+    <h1>SendGrid APIs</h1>
+    <div class=3D"Section1">
+        <p><strong>Pre-requisite:</strong></p>
+<p>For all APIs, we need use the below headers:</p>
+<p>Authorization: Bearer &lt;&lt;Your API Key here&gt;&gt;<br>Content-Type:=
+ application/json</p>
+<p></p>
+<p><strong>API to check the Event Tracking Settings:</strong></p>
+<p>URL: <a href=3D"https://api.sendgrid.com/v3/user/webhooks/event/settings=
+" class=3D"external-link" rel=3D"nofollow">https://api.sendgrid.com/v3/user=
+/webhooks/event/settings</a></p>
+<p>Request Type: GET</p>
+<p>Payload:</p>
+<p>{<br>"bounce": true,<br>"click": true,<br>"deferred": true,<br>"delivere=
+d": true,<br>"dropped": true,<br>"enabled": true,<br>"group_resubscribe": f=
+alse,<br>"group_unsubscribe": false,<br>"open": true,<br>"processed": true,=
+<br>"spam_report": true,<br>"unsubscribe": false,<br>"url": "<a href=3D"htt=
+ps://dm-qc-notification-functionapp.azurewebsites.net/api/v1/notification/e=
+venttracking%22" class=3D"external-link" rel=3D"nofollow">https://dm-qc-not=
+ification-functionapp.azurewebsites.net/api/v1/notification/eventtracking"<=
+/a><br>}</p>
+<p></p>
+<p><strong>This will return the status of the event settings. In the above =
+payload, if the click is true, it means that the click event of the mail wi=
+ll be tracked.</strong></p>
+<p></p>
+<p><strong>API to patch or update the Event Tracking Settings:</strong></p>
+<p>it will same as above. Only change will in the Request Type which will b=
+e as <strong>PATCH</strong></p>
+<p></p>
+<p><strong>API to check email activity:</strong></p>
+<p><strong>URL</strong>: <a href=3D"https://api.sendgrid.com/v3/messages?li=
+mit=3D20" class=3D"external-link" rel=3D"nofollow">https://api.sendgrid.com=
+/v3/messages?limit=3D20</a></p>
+<p><strong>Request Type</strong> : GET</p>
+<p><strong>This will return the last 20 messages that was sent using SendGr=
+id.</strong></p>
+<p></p>
+<p>For more reading, you may refer the below site:</p>
+<p><a href=3D"https://sendgrid.api-docs.io/v3.0/settings-tracking/retrieve-=
+tracking-settings" class=3D"external-link" rel=3D"nofollow">https://sendgri=
+d.api-docs.io/v3.0/settings-tracking/retrieve-tracking-settings</a></p>
+<p></p>
+    </div>
+</body>
+</html>
+------=_Part_14_400716490.1600323986687--
